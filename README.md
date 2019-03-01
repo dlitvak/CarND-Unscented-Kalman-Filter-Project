@@ -10,7 +10,7 @@ the sigma points only.  Then, UKF uses the incoming measurements to update the o
 ## Running Project 
 Please refer to the original Udacity project [README](./README_orig.md)
 
-## Project Output
+## Project Output (UKF)
 ![UKF Output](./UKF_sim.png)
 
 The blue dots are radar measurements, the red dots are laser measurements, and the green dots are the UKF tracking results.

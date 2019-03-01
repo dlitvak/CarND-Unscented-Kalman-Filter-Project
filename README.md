@@ -1,91 +1,47 @@
-# Unscented Kalman Filter Project Starter Code
-Self-Driving Car Engineer Nanodegree Program
+# Unscented Calman Filter (UKF) Implementation
 
-In this project utilize an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. Passing the project requires obtaining RMSE values that are lower that the tolerance outlined in the project rubric. 
+## Project Intro
 
-This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases).
+This project implements UKF in C++.  UKF is used to track an object position based on lidar and radar sensor fusion.
+UKF relies on non-linear CTRV (Constant Turn Rate and Velocity) model.  To obviate the need to calculate Jaconbians and 
+linearly approximate the model, UKF generates sigma points.  UKF makes prediction of the mean and covariance matrix for 
+the sigma points only.  Then, UKF uses the incoming measurements to update the object position.  
 
-This repository includes two files that can be used to set up and intall [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) for either Linux or Mac systems. For windows you can use either Docker, VMware, or even [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) to install uWebSocketIO. Please see the uWebSocketIO Starter Guide page in the classroom within the EKF Project lesson for the required version and installation scripts.
+## Running Project 
+Please refer to the original Udacity project [README](./README_orig.md)
 
-Once the install for uWebSocketIO is complete, the main program can be built and ran by doing the following from the project top directory.
+## Project Output
+![UKF Output](./UKF_sim.png)
 
-1. mkdir build
-2. cd build
-3. cmake ..
-4. make
-5. ./UnscentedKF
+The blue dots are radar measurements, the red dots are laser measurements, and the green dots are the UKF tracking results.
+The positions of green dots are sent from [main.cpp](./main.cpp) to the simulator.
 
-Tips for setting up your environment can be found in the classroom lesson for the EKF project.
+Over the run of the simulation, Root Mean Square Error (RMSE) is calculated for the position and the velocity predictions.  The ground
+truth values for the calculation are supplied by the simulator.  The estimations are accumulated, such that each RMSE value is 
+cumulative at each moment.  The simulator displays RMSE in the lower corner.  UKF RMSE is smaller than EKF's, because CTRV model 
+is better at predicting non-linear motion. 
 
-Note that the programs that need to be written to accomplish the project are src/ukf.cpp, src/ukf.h, tools.cpp, and tools.h
+## EKF Output
+![EKF Output](./EKF_sim.png)
 
-The program main.cpp has already been filled out, but feel free to modify it.
+For this project, we had to find and set our own standard deviation of acceleration and of yaw acceleration values.
+I cheated by reading off the ground truth values from the data and finding the maximum tracked object acceleration
+and yaw acceleration.  After rounding the values off to the nearest integer value, I set the standard deviation of 
+acceleration and of yaw acceleration to 1.0 and 2.0, respectively.  (The code in [main.cpp](./main.cpp) is commented out)
 
-Here is the main protocol that main.cpp uses for uWebSocketIO in communicating with the simulator.
+Normally, NIS (Normalized Information Squared) analysis is used to choose the standard deviation values.  NIS analysis result
+shows how well a model with the chosen standard deviations predicts the reality. 
+If the chosen std. deviations are consistent with the reality, the computed NIS values should roughly obey a chi-square 
+distribution for the corresponding number of degrees of freedom.  According to the Chi-Square table presented in
+the lecture, for radar's 3 degrees of freedom, 95% of all NIS values should be below 7.815.  For lidar's 2 degrees of freedom,
+95% of all NIS values should be below 5.991.
 
+Running NIS analysis with the standard deviation of acceleration and of yaw acceleration set to 1.0 and 2.0, I found that 
+about 3.6% of radar NIS values were above 7.815.  For lidar, 2.8% of NIS values were above 5.991.
 
-INPUT: values provided by the simulator to the c++ program
+## Plots of NIS Values against Chi-Square 5% Probability values 
 
-["sensor_measurement"] => the measurment that the simulator observed (either lidar or radar)
+![NIS Radar](./NIS_radar.png)
 
-
-OUTPUT: values provided by the c++ program to the simulator
-
-["estimate_x"] <= kalman filter estimated position x
-["estimate_y"] <= kalman filter estimated position y
-["rmse_x"]
-["rmse_y"]
-["rmse_vx"]
-["rmse_vy"]
-
----
-
-## Other Important Dependencies
-* cmake >= 3.5
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-
-## Basic Build Instructions
-
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./UnscentedKF`
-
-## Editor Settings
-
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
-
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
-
-## Code Style
-
-Please stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html) as much as possible.
-
-## Generating Additional Data
-
-This is optional!
-
-If you'd like to generate your own radar and lidar data, see the
-[utilities repo](https://github.com/udacity/CarND-Mercedes-SF-Utilities) for
-Matlab scripts that can generate additional data.
-
-## Project Instructions and Rubric
-
-This information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see the project page in the classroom
-for instructions and the project rubric.
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+![NIS Lidar](./NIS_lidar.png)
 

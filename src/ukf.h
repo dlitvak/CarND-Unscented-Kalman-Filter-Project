@@ -3,6 +3,11 @@
 
 #include "Eigen/Dense"
 #include "measurement_package.h"
+#include "tools.h"
+#include <fstream>
+
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
 
 class UKF {
  public:
@@ -57,6 +62,9 @@ class UKF {
   // state covariance matrix
   Eigen::MatrixXd P_;
 
+  // noise covariance matrix
+  Eigen::MatrixXd Q_;
+
   // predicted sigma points matrix
   Eigen::MatrixXd Xsig_pred_;
 
@@ -88,13 +96,53 @@ class UKF {
   Eigen::VectorXd weights_;
 
   // State dimension
-  int n_x_;
+  const int n_x_ = 5;
 
   // Augmented state dimension
-  int n_aug_;
+  const int n_aug_ = 7;
 
   // Sigma point spreading parameter
-  double lambda_;
+  const double lambda_ = 3 - n_x_;
+
+  long long int previous_timestamp_ = 0;
+
+  Tools tools;
+
+  // Prediction
+  MatrixXd Xsig_aug_;  // Augmented Sigma points matrix
+  MatrixXd P_aug_;     // Augmented Covariance matrix
+
+  //Measurement Update
+  Eigen::MatrixXd R_rdr_;
+  MatrixXd Zsig_rdr_;   // matrix for sigma points in measurement space
+  VectorXd z_pred_rdr_;  // mean predicted measurement
+  VectorXd z_raw_rdr_;   //raw measurements
+  MatrixXd S_rdr_;    // measurement covariance matrix S
+  MatrixXd Tc_rdr_; //matrix for cross correlation Tc
+
+  Eigen::MatrixXd R_lzr_;
+  MatrixXd Zsig_lzr_;
+  VectorXd z_pred_lzr_;
+  VectorXd z_raw_lzr_;
+  MatrixXd S_lzr_;
+  MatrixXd Tc_lzr_;
+
+  // NIS analysis
+  std::ofstream NIS_rdr_strm_;
+  int NIS_cnt_rdr_ = 0;
+  int NIS_cnt_gt_chi_rdr_ = 0;
+
+  std::ofstream NIS_lzr_strm_;
+  int NIS_cnt_lzr_ = 0;
+  int NIS_cnt_gt_chi_lzr_ = 0;
+
+/*    // Analyze possible max values for tracked object acceleration and yaw acceleration
+  double prev_v_ = 0.;
+  double prev_yawd_ = 0.;
+  double acc_a = 0.;
+  double acc_ydd = 0.;
+  double acc_a_max = 0.;
+  double acc_ydd_max = 0.;*/
 };
 
 #endif  // UKF_H

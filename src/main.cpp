@@ -106,9 +106,38 @@ int main() {
           gt_values(2) = vx_gt;
           gt_values(3) = vy_gt;
           ground_truth.push_back(gt_values);
-          
+
+          float yaw_gt, yawd_gt;
+          iss >> yaw_gt;
+          iss >> yawd_gt;
+
           // Call ProcessMeasurement(meas_package) for Kalman filter
-          ukf.ProcessMeasurement(meas_package);       
+          ukf.ProcessMeasurement(meas_package);
+          /*  // Analyze possible max values for tracked object acceleration and yaw acceleration
+          if (ukf.previous_timestamp_ == 0) {
+              ukf.previous_timestamp_ = meas_package.timestamp_;
+              ukf.prev_v_ = vx_gt * vx_gt + vy_gt * vy_gt;
+              ukf.prev_yawd_ = yawd_gt;
+          }
+          else {
+              double dt = (meas_package.timestamp_ - ukf.previous_timestamp_)/ 1000000.0;
+              float v = vx_gt * vx_gt + vy_gt * vy_gt;
+              double dv = v - ukf.prev_v_;
+              ukf.prev_v_ = v;
+              double d_yawd = yaw_gt - ukf.prev_yawd_;
+              ukf.prev_yawd_ =  yaw_gt;
+              ukf.acc_a += dv/dt;
+              ukf.acc_ydd += d_yawd/dt;
+
+              if (fabs(ukf.acc_a) > ukf.acc_a_max) {
+                  ukf.acc_a_max = fabs(ukf.acc_a);
+                  std::cout << "acc_a_max: " << ukf.acc_a_max << std::endl; //0.74
+              }
+              if (fabs(ukf.acc_ydd) > ukf.acc_ydd_max) {
+                  ukf.acc_ydd_max = fabs(ukf.acc_ydd);
+                  std::cout << "acc_ydd_max: " << ukf.acc_ydd_max << std::endl; //0.4
+              }
+          }*/
 
           // Push the current estimated x,y positon from the Kalman filter's 
           //   state vector

@@ -22,6 +22,10 @@ class Tools {
   Eigen::VectorXd CalculateRMSE(const std::vector<Eigen::VectorXd> &estimations,
                                 const std::vector<Eigen::VectorXd> &ground_truth);
 
+    /**
+   * Convert polar Vector polarV to cartesian Vecor
+   */
+    Eigen::VectorXd ConvertPolarToCartesian(const Eigen::VectorXd &polarV);
 };
 
 #endif  // TOOLS_H_

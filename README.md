@@ -29,8 +29,8 @@ I cheated by reading off the ground truth values from the data and finding the m
 and yaw acceleration.  After rounding the values off to the nearest integer value, I set the standard deviation of 
 acceleration and of yaw acceleration to 1.0 and 2.0, respectively.  (The code in [main.cpp](./main.cpp) is commented out)
 
-Normally, NIS (Normalized Information Squared) analysis is used to choose the standard deviation values.  NIS analysis result
-shows how well a model with the chosen standard deviations predicts the reality. 
+Normally, NIS (Normalized Information Squared) analysis is used to choose the noise standard deviation values.  NIS 
+analysis result shows how well a model with the chosen standard deviations predicts the reality. 
 If the chosen std. deviations are consistent with the reality, the computed NIS values should roughly obey a chi-square 
 distribution for the corresponding number of degrees of freedom.  According to the Chi-Square table presented in
 the lecture, for radar's 3 degrees of freedom, 95% of all NIS values should be below 7.815.  For lidar's 2 degrees of freedom,
@@ -39,9 +39,11 @@ the lecture, for radar's 3 degrees of freedom, 95% of all NIS values should be b
 Running NIS analysis with the standard deviation of acceleration and of yaw acceleration set to 1.0 and 2.0, I found that 
 about 3.6% of radar NIS values were above 7.815.  For lidar, 2.8% of NIS values were above 5.991.
 
-## Plots of NIS Values against Chi-Square 5% Probability values 
+## Plots of NIS Values against Chi-Square 5% Probability Values 
 
 ![NIS Radar](./NIS_radar.png)
 
 ![NIS Lidar](./NIS_lidar.png)
 
+If NIS values were much lower than the Chi-Square value, it would mean that standard deviations of the process noise were 
+overestimated, and vice versa.
